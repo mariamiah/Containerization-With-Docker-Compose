@@ -1,0 +1,32 @@
+version: '3' #specification of the docker-compose version
+services:
+  web:     # name of the first service
+    build: Client
+    ports:
+      - "5000:5000" # Specify ports mapping
+  
+  database: # name of the second service
+    image: postgres:latest
+    container_name: pg_container
+    volumes:
+       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # specify port forwarding
+  
+  express: # name of the third service
+    build: Server
+    container_name: api_container
+    ports:
+      - "3000:3000" # specify ports mapping
+    links:
+      - database # link this service to the database service
+    environment:
+      - PGHOST=localhost
+      - PGDATABASE=storemanagerdb
+      - PGUSER=postgres
+      - PGPASSWORD=123
+      - PGPORT=5432
+    depends_on:
+      - database
+volumes:
+  pgdata: {}
